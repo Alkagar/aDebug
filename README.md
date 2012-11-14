@@ -1,5 +1,6 @@
-aDebug
-======
+# aDebug
+
+## Overview
 
 A little tool for debuging PHP scripts
 
@@ -13,21 +14,19 @@ in whole application - then you don't need to remove all dump function - they
 just will not be displayed.
 
 
-Structure
-=========
+## Structure
 
+```
 * void  | aDebug::dump($variable1, $variable2, $variable3 ...);
 * void  | aDebug::ndump($namedSection, $variable1, $variable2, $variable3 ...);
-
 * void  | aDebug::enable();
 * void  | aDebug::disable();
 * void  | aDebug::allowCli($bool);
 * void  | aDebug::allowWeb($bool);
-
 * array | aDebug::getErrors();
 * bool  | aDebug::config($option, $value);
     * enabled true, false
     * allowWeb true, false
     * allowCli true, false
-
 * bool aDebugUtil::isCli();
+```
