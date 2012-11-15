@@ -17,16 +17,17 @@ just will not be displayed.
 ## Structure
 
 ```
-* void  | aDebug::dump($variable1, $variable2, $variable3 ...);
-* void  | aDebug::ndump($namedSection, $variable1, $variable2, $variable3 ...);
-* void  | aDebug::enable();
-* void  | aDebug::disable();
-* void  | aDebug::allowCli($bool);
-* void  | aDebug::allowWeb($bool);
-* array | aDebug::getErrors();
-* bool  | aDebug::config($option, $value);
+* void  | ADebug::dump($variable1, $variable2, $variable3 ...);
+* void  | ADebug::ndump($namedSection, $variable1, $variable2, $variable3 ...);
+* void  | ADebug::enable();
+* void  | ADebug::disable();
+* void  | ADebug::allowCli($bool);
+* void  | ADebug::allowWeb($bool);
+* array | ADebug::getErrors();
+* bool  | ADebug::config($option, $value);
     * enabled true, false
     * allowWeb true, false
     * allowCli true, false
-* bool aDebugUtil::isCli();
+* bool ADebugUtil::isCli();
+* bool ADebugUtil::isWeb();
 ```
