@@ -89,12 +89,10 @@
         {
             $tabulator = self::_getTabulator();
             $level = self::$_level;
-            echo 
-            "<div class='adebug-element level-$level' style='padding-left:$tabulator; white-space:pre; font-family:monospace;'>" .
-            $elementName . ' => ' .
-            '(' . gettype($element) . ') ' .
-            $element .
-            "</div>";
+
+            $value = $elementName . ' => ' .  '(' . gettype($element) . ') ' . $element;
+            $options = self::_prepareOptionsForElement($tabulator, $level);
+            echo self::htmlElement('div', $value, $options);
         }
 
         private static function _printPrimitiveCli($element, $elementName)
@@ -120,11 +118,10 @@
         {
             $tabulator = self::_getTabulator();
             $level = self::$_level;
-            echo 
-            "<div class='adebug-element level-$level' style='padding-left:$tabulator; white-space:pre; font-family:monospace;'>" .
-            $elementName . ' => ' .
-            '(' . gettype($element) . ') ' .
-            "</div>";
+
+            $value = $elementName . ' => ' .  '(' . gettype($element) . ') ';
+            $options = self::_prepareOptionsForElement($tabulator, $level);
+            echo self::htmlElement('div', $value, $options);
         }
 
         private static function _printArrayCli($element, $elementName) 
@@ -150,11 +147,9 @@
         {
             $tabulator = self::_getTabulator();
             $level = self::$_level;
-            echo 
-            "<div class='adebug-element level-$level' style='padding-left:$tabulator; white-space:pre; font-family:monospace;'>" .
-            $elementName . ' => ' .
-            '(' . get_class($element) . ') ' .
-            "</div>";
+            $value = $elementName . ' => ' .  '(' . get_class($element) . ') ';
+            $options = self::_prepareOptionsForElement($tabulator, $level);
+            echo self::htmlElement('div', $value, $options);
         }
 
         private static function _printObjectCli($element, $elementName) 
@@ -184,4 +179,44 @@
             }
         }
 
+        private static function htmlElement($tag, $value, $options) 
+        {
+            $preparedOptions = '';
+            foreach($options as $key => $values) {
+                if($key == 'class') {
+                    $preparedOptions .= " class='";
+                    foreach($values as $k => $v) {
+                        $preparedOptions .= "$v ";
+                    }
+                    $preparedOptions .= "'";
+                } else if($key == 'style') {
+                    $preparedOptions .= " style='";
+                    foreach($values as $k => $v) {
+                        $preparedOptions .= "$k:$v; ";
+                    }
+                    $preparedOptions .= "'";
+                } else {
+                    $preparedOptions .= " $key='$value' ";
+                }
+            }
+            return "<$tag $preparedOptions>$value</$tag>";
+        }
+
+        private static function _prepareOptionsForElement($tabulator, $level)
+        {
+            $color = 'rgb(' . (100 + (10 * $level)) . ', '. (100 + (10 * $level)) .', '. (100 + (10 * $level)) .')';
+            $options = array(
+                'class' => array(
+                    'adebug-element', 
+                    "level-$level"
+                ),
+                'style' => array(
+                    'padding-left' => $tabulator,
+                    'white-space' => 'pre',
+                    'font-family' => 'monospace',
+                    'background-color' => $color,
+                ),
+            );
+            return $options;
+        }
     }
