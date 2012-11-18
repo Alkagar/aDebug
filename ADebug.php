@@ -1,8 +1,8 @@
 <?php
+    require_once 'ADebugConfig.php';
     class ADebug
     {
         private static $_level = 0;
-
 
         private static function _iterateOverElements($element, $elementName)
         {
@@ -21,10 +21,20 @@
 
         private static function _getTabulator()
         {
+            if(ADebugConfig::isCli()) {
+                return self::_getTabulatorWithPrefix('   ');
+            } else {
+                //return self::_getTabulatorWithPrefix('&nbsp;&nbsp;&nbsp;');
+                return (self::$_level * 20) . 'px';
+            }
+        }
+
+        private static function _getTabulatorWithPrefix($prefix = '   ')
+        {
             $i = 0;
             $tabulator = '';
             while($i++ < self::$_level) {
-                $tabulator .= '   ';
+                $tabulator .= $prefix;
             }
             return $tabulator;
         }
@@ -68,6 +78,27 @@
 
         private static function _printPrimitive($element, $elementName)
         {
+            if(ADebugConfig::isCli()) {
+                self::_printPrimitiveCli($element, $elementName);
+            } else {
+                self::_printPrimitiveWeb($element, $elementName);
+            }
+        }
+
+        private static function _printPrimitiveWeb($element, $elementName)
+        {
+            $tabulator = self::_getTabulator();
+            $level = self::$_level;
+            echo 
+            "<div class='adebug-element level-$level' style='padding-left:$tabulator; white-space:pre; font-family:monospace;'>" .
+            $elementName . ' => ' .
+            '(' . gettype($element) . ') ' .
+            $element .
+            "</div>";
+        }
+
+        private static function _printPrimitiveCli($element, $elementName)
+        {
             echo 
             self::_getTabulator() . 
             $elementName . ' => ' .
@@ -78,6 +109,26 @@
 
         private static function _printArray($element, $elementName) 
         {
+            if(ADebugConfig::isCli()) {
+                self::_printArrayCli($element, $elementName);
+            } else {
+                self::_printArrayWeb($element, $elementName);
+            }
+        }
+
+        private static function _printArrayWeb($element, $elementName) 
+        {
+            $tabulator = self::_getTabulator();
+            $level = self::$_level;
+            echo 
+            "<div class='adebug-element level-$level' style='padding-left:$tabulator; white-space:pre; font-family:monospace;'>" .
+            $elementName . ' => ' .
+            '(' . gettype($element) . ') ' .
+            "</div>";
+        }
+
+        private static function _printArrayCli($element, $elementName) 
+        {
             echo 
             self::_getTabulator() . 
             $elementName . ' => ' .
@@ -87,6 +138,26 @@
         }
 
         private static function _printObject($element, $elementName) 
+        {
+            if(ADebugConfig::isCli()) {
+                self::_printObjectCli($element, $elementName);
+            } else {
+                self::_printObjectWeb($element, $elementName);
+            }
+        }
+
+        private static function _printObjectWeb($element, $elementName) 
+        {
+            $tabulator = self::_getTabulator();
+            $level = self::$_level;
+            echo 
+            "<div class='adebug-element level-$level' style='padding-left:$tabulator; white-space:pre; font-family:monospace;'>" .
+            $elementName . ' => ' .
+            '(' . get_class($element) . ') ' .
+            "</div>";
+        }
+
+        private static function _printObjectCli($element, $elementName) 
         {
             echo 
             self::_getTabulator() . 
