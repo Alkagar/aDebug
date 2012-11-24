@@ -2,18 +2,23 @@
     require_once 'ADebugConfig.php';
     class ADebug
     {
+        private static $_dump = '';
         private static $_level = 0;
 
         private static function _iterateOverElements($element, $elementName)
         {
             if(is_object($element)) {
-                self::_printObject($element, $elementName);
-                self::_iterateOverObject($element);
+                $dump = self::_iterateOverObject($element);
+                //self::$_dump .= self::htmlElement('div', $dump, array());
+                //self::$_dump .= self::htmlElement('div', self::_printObject($element, $elementName), array());
                 return false;
             }
             if(is_array($element)) {
-                self::_printArray($element, $elementName);
+                echo '<div>';
+                echo self::htmlElement('div', self::_printArray($element, $elementName), array());
                 self::_iterateOverArray($element);
+                echo '</div>';
+                //self::$_dump = self::htmlElement('div', $dump, array()) . self::$_dump;
                 return false;
             }
             return true;
@@ -41,6 +46,7 @@
 
         private static function _iterateOverObject($element)
         {
+            $dump = '';
             self::$_level++;
             $reflect = new ReflectionClass($element);
             //by default get all properties, add some parameters in config to change this
@@ -59,21 +65,25 @@
             }
             foreach($allProperties as $propertyName => $propertyValue) {
                 if(self::_iterateOverElements($propertyValue, $propertyName)) {
-                    self::_printPrimitive($propertyValue, $propertyName);
+                    $dump = self::_printPrimitive($propertyValue, $propertyName) . $dump;
                 }
             }
             self::$_level--;
+            return self::htmlElement('div', $dump, array());
         }
 
         private static function _iterateOverArray($element)
         {
+            $dump = '';
             self::$_level++;
             foreach($element as $elementKey => $subElement) {
                 if(self::_iterateOverElements($subElement, $elementKey)) {
-                    self::_printPrimitive($subElement, $elementKey);
+                    $dump = self::_printPrimitive($subElement, $elementKey) . $dump;
+                    echo $dump;
                 }
             } 
             self::$_level--;
+            //return self::htmlElement('div', $dump, array());
         }
 
         private static function _printPrimitive($element, $elementName)
@@ -81,7 +91,7 @@
             if(ADebugConfig::isCli()) {
                 self::_printPrimitiveCli($element, $elementName);
             } else {
-                self::_printPrimitiveWeb($element, $elementName);
+                return self::_printPrimitiveWeb($element, $elementName);
             }
         }
 
@@ -92,7 +102,7 @@
 
             $value = $elementName . ' => ' .  '(' . gettype($element) . ') ' . $element;
             $options = self::_prepareOptionsForElement($tabulator, $level);
-            echo self::htmlElement('div', $value, $options);
+            return self::htmlElement('div', $value, $options);
         }
 
         private static function _printPrimitiveCli($element, $elementName)
@@ -110,7 +120,7 @@
             if(ADebugConfig::isCli()) {
                 self::_printArrayCli($element, $elementName);
             } else {
-                self::_printArrayWeb($element, $elementName);
+                return self::_printArrayWeb($element, $elementName);
             }
         }
 
@@ -121,7 +131,7 @@
 
             $value = $elementName . ' => ' .  '(' . gettype($element) . ') ';
             $options = self::_prepareOptionsForElement($tabulator, $level);
-            echo self::htmlElement('div', $value, $options);
+            return self::htmlElement('div', $value, $options);
         }
 
         private static function _printArrayCli($element, $elementName) 
@@ -139,7 +149,7 @@
             if(ADebugConfig::isCli()) {
                 self::_printObjectCli($element, $elementName);
             } else {
-                self::_printObjectWeb($element, $elementName);
+                return self::_printObjectWeb($element, $elementName);
             }
         }
 
@@ -149,7 +159,7 @@
             $level = self::$_level;
             $value = $elementName . ' => ' .  '(' . get_class($element) . ') ';
             $options = self::_prepareOptionsForElement($tabulator, $level);
-            echo self::htmlElement('div', $value, $options);
+            return self::htmlElement('div', $value, $options);
         }
 
         private static function _printObjectCli($element, $elementName) 
@@ -166,8 +176,9 @@
         {
             $args = func_get_args();
             foreach($args as $key => $arg) {
-                self::_iterateOverElements($arg,$key);
+                    self::_iterateOverElements($arg,$key);
             }
+            echo self::$_dump;
         }
 
         public static function ndump($namedSection, $var)
@@ -208,13 +219,15 @@
             $options = array(
                 'class' => array(
                     'adebug-element', 
-                    "level-$level"
+                    "element-level-$level"
                 ),
                 'style' => array(
                     'padding-left' => $tabulator,
-                    'white-space' => 'pre',
-                    'font-family' => 'monospace',
                     'background-color' => $color,
+                    'white-space' => 'pre',
+                    'width' => '100%',
+                    'height' => '25px',
+                    'font-family' => 'monospace'
                 ),
             );
             return $options;
