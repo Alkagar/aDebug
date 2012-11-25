@@ -14,11 +14,10 @@
                 return false;
             }
             if(is_array($element)) {
-                echo '<div>';
-                echo self::htmlElement('div', self::_printArray($element, $elementName), array());
+                self::$_dump .= '<div>';
+                self::$_dump .= self::htmlElement('div', self::_printArray($element, $elementName), array());
                 self::_iterateOverArray($element);
-                echo '</div>';
-                //self::$_dump = self::htmlElement('div', $dump, array()) . self::$_dump;
+                self::$_dump .= '</div>';
                 return false;
             }
             return true;
@@ -46,7 +45,6 @@
 
         private static function _iterateOverObject($element)
         {
-            $dump = '';
             self::$_level++;
             $reflect = new ReflectionClass($element);
             //by default get all properties, add some parameters in config to change this
@@ -65,25 +63,21 @@
             }
             foreach($allProperties as $propertyName => $propertyValue) {
                 if(self::_iterateOverElements($propertyValue, $propertyName)) {
-                    $dump = self::_printPrimitive($propertyValue, $propertyName) . $dump;
+                    self::$_dump .= self::_printPrimitive($propertyValue, $propertyName);
                 }
             }
             self::$_level--;
-            return self::htmlElement('div', $dump, array());
         }
 
         private static function _iterateOverArray($element)
         {
-            $dump = '';
             self::$_level++;
             foreach($element as $elementKey => $subElement) {
                 if(self::_iterateOverElements($subElement, $elementKey)) {
-                    $dump = self::_printPrimitive($subElement, $elementKey) . $dump;
-                    echo $dump;
+                    self::$_dump .= self::_printPrimitive($subElement, $elementKey);
                 }
             } 
             self::$_level--;
-            //return self::htmlElement('div', $dump, array());
         }
 
         private static function _printPrimitive($element, $elementName)
@@ -225,7 +219,6 @@
                     'padding-left' => $tabulator,
                     'background-color' => $color,
                     'white-space' => 'pre',
-                    'width' => '100%',
                     'height' => '25px',
                     'font-family' => 'monospace'
                 ),
