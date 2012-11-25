@@ -5,19 +5,21 @@
         private static $_dump = '';
         private static $_level = 0;
 
-        private static function _iterateOverElements($element, $elementName)
+        private static function _iterateOverElements($element, $elementName, $root = false)
         {
+            $class = $root ? 'root' : '';
             if(is_object($element)) {
-                $dump = self::_iterateOverObject($element);
-                //self::$_dump .= self::htmlElement('div', $dump, array());
-                //self::$_dump .= self::htmlElement('div', self::_printObject($element, $elementName), array());
+                self::$_dump .= "<div class='container $class'>";
+                    self::$_dump .= self::htmlElement('div', self::_printObject($element, $elementName), array('class' => array('title')));
+                    self::_iterateOverObject($element);
+                    self::$_dump .= '</div>';
                 return false;
             }
             if(is_array($element)) {
-                self::$_dump .= '<div>';
-                self::$_dump .= self::htmlElement('div', self::_printArray($element, $elementName), array());
-                self::_iterateOverArray($element);
-                self::$_dump .= '</div>';
+                self::$_dump .= "<div class='container $class'>";
+                    self::$_dump .= self::htmlElement('div', self::_printArray($element, $elementName), array('class' => array('title')));
+                    self::_iterateOverArray($element);
+                    self::$_dump .= '</div>';
                 return false;
             }
             return true;
@@ -170,7 +172,7 @@
         {
             $args = func_get_args();
             foreach($args as $key => $arg) {
-                    self::_iterateOverElements($arg,$key);
+                self::_iterateOverElements($arg,$key, true);
             }
             echo self::$_dump;
         }
@@ -216,11 +218,11 @@
                     "element-level-$level"
                 ),
                 'style' => array(
-                    'padding-left' => $tabulator,
-                    'background-color' => $color,
-                    'white-space' => 'pre',
-                    'height' => '25px',
-                    'font-family' => 'monospace'
+                    //'padding-left' => $tabulator,
+                    //'background-color' => $color,
+                    //'white-space' => 'pre',
+                    //'height' => '25px',
+                    //'font-family' => 'monospace'
                 ),
             );
             return $options;
