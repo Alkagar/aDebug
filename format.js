@@ -7,13 +7,19 @@ $(document).ready(function() {
                 }
             });
     }
+    function openLevel(element) {
+        element.children().each(
+            function() {
+                $(this).show();
+            });
+    }
 
     var opener = $('<span></span>').text('+ ');
     opener.click(function() {
-        $(this).parent().parent().parent().children().each(function() {
-            $(this).show();
-        }); 
+        var element = $(this).parent().parent().parent();
+        openLevel(element);
     });
+
     $('body').prepend(opener);
     $('.title .adebug-element').prepend(opener);
     $('.root').each(function() {
